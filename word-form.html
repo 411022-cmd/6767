@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>單字管理表單</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 新增單字</h1>
+        
+        <div id="message" class="message"></div>
+
+        <form id="wordForm">
+            <div class="form-group">
+                <label for="englishWord">
+                    英文單字 <span class="required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="englishWord" 
+                    name="englishWord" 
+                    placeholder="例如：perseverance"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="chineseTranslation">
+                    中文翻譯 <span class="required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="chineseTranslation" 
+                    name="chineseTranslation" 
+                    placeholder="例如：堅持不懈"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="etymology">
+                    字根分析 <span class="required">*</span>
+                </label>
+                <textarea 
+                    id="etymology" 
+                    name="etymology" 
+                    placeholder="例如：persist(堅持) + ance(名詞後綴) = 堅持的質量"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="exampleSentence">
+                    例句 <span class="required">*</span>
+                </label>
+                <textarea 
+                    id="exampleSentence" 
+                    name="exampleSentence" 
+                    placeholder="例如：Her perseverance in learning English impressed everyone."
+                    required
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="partOfSpeech">
+                    詞性 <span class="required">*</span>
+                </label>
+                <select id="partOfSpeech" name="partOfSpeech" required>
+                    <option value="">-- 請選擇詞性 --</option>
+                    <option value="名詞">名詞 (Noun)</option>
+                    <option value="動詞">動詞 (Verb)</option>
+                    <option value="形容詞">形容詞 (Adjective)</option>
+                    <option value="副詞">副詞 (Adverb)</option>
+                    <option value="介詞">介詞 (Preposition)</option>
+                    <option value="代名詞">代名詞 (Pronoun)</option>
+                    <option value="連接詞">連接詞 (Conjunction)</option>
+                    <option value="感嘆詞">感嘆詞 (Interjection)</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-submit">
+                    💾 儲存單字
+                </button>
+                <button type="reset" class="btn-reset">
+                    🔄 清除
+                </button>
+            </div>
+
+            <div class="loading" id="loading">
+                <span class="spinner"></span>
+                <span>正在提交資料...</span>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // 替換為你的 Google App Script Web App URL
+        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APP_SCRIPT_URL_HERE';
+
+        const form = document.getElementById('wordForm');
+        const messageDiv = document.getElementById('message');
+        const loadingDiv = document.getElementById('loading');
+
+        // 顯示訊息的函數
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type} show`;
+            setTimeout(() => {
+                messageDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        // 表單提交處理
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // 驗證Google App Script URL是否已設置
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APP_SCRIPT_URL_HERE') {
+                showMessage('❌ 錯誤：Google App Script URL 尚未設置', 'error');
+                return;
+            }
+
+            // 收集表單資料
+            const formData = {
+                englishWord: document.getElementById('englishWord').value.trim(),
+                chineseTranslation: document.getElementById('chineseTranslation').value.trim(),
+                etymology: document.getElementById('etymology').value.trim(),
+                exampleSentence: document.getElementById('exampleSentence').value.trim(),
+                partOfSpeech: document.getElementById('partOfSpeech').value,
+                timestamp: new Date().toLocaleString('zh-TW')
+            };
+
+            // 驗證資料
+            if (!formData.englishWord || !formData.chineseTranslation || 
+                !formData.etymology || !formData.exampleSentence || !formData.partOfSpeech) {
+                showMessage('❌ 錯誤：請填寫所有必填欄位', 'error');
+                return;
+            }
+
+            // 顯示加載狀態
+            loadingDiv.style.display = 'block';
+            form.querySelector('.btn-submit').disabled = true;
+
+            try {
+                // 發送資料到 Google App Script
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                // 隱藏加載狀態
+                loadingDiv.style.display = 'none';
+                form.querySelector('.btn-submit').disabled = false;
+
+                showMessage('✅ 成功：單字已儲存到試算表', 'success');
+                form.reset();
+
+            } catch (error) {
+                console.error('錯誤:', error);
+                loadingDiv.style.display = 'none';
+                form.querySelector('.btn-submit').disabled = false;
+                showMessage('❌ 錯誤：無法連接到伺服器，請檢查網路連線', 'error');
+            }
+        });
+
+        // 清除表單時隱藏訊息
+        form.addEventListener('reset', () => {
+            messageDiv.classList.remove('show');
+        });
+    </script>
+</body>
+</html>

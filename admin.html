@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理頁面 - 計算機</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .back-link {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s;
+        }
+
+        .back-link:hover {
+            background: #764ba2;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-container {
+            background: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #764ba2;
+        }
+
+        .btn-save:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-clear {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 管理頁面</h1>
+            <a href="index.html" class="back-link">← 返回</a>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div class="form-container">
+            <form id="adminForm">
+                <div class="form-group">
+                    <label for="number1">第一個數字</label>
+                    <input type="number" id="number1" required placeholder="輸入第一個數字">
+                </div>
+
+                <div class="form-group">
+                    <label for="number2">第二個數字</label>
+                    <input type="number" id="number2" required placeholder="輸入第二個數字">
+                </div>
+
+                <div class="form-group">
+                    <label for="answer">相加答案</label>
+                    <input type="number" id="answer" required placeholder="輸入相加答案">
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-save">💾 儲存資料</button>
+                    <button type="reset" class="btn-clear">🔄 清除</button>
+                </div>
+
+                <div class="loading" id="loading">
+                    <span class="spinner"></span>
+                    <span>正在儲存...</span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 替換為你的 Google App Script 部署 URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJdYmtMu0xM1nElndqSuSgeVmePNrbbZtHz6-YUkjQJHvDUEmJXLjxGViaikCcA4nfMQ/exec';
+
+        const form = document.getElementById('adminForm');
+        const messageDiv = document.getElementById('message');
+        const loadingDiv = document.getElementById('loading');
+
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type} show`;
+            setTimeout(() => {
+                messageDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // 驗證 URL 是否已設置
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APP_SCRIPT_URL_HERE') {
+                showMessage('❌ 錯誤：Google App Script URL 未設置', 'error');
+                return;
+            }
+
+            const num1 = document.getElementById('number1').value;
+            const num2 = document.getElementById('number2').value;
+            const answer = document.getElementById('answer').value;
+
+            // 驗證邏輯：檢查 num1 + num2 是否等於 answer
+            if (parseFloat(num1) + parseFloat(num2) !== parseFloat(answer)) {
+                showMessage('❌ 錯誤：答案計算不正確 (' + parseFloat(num1) + ' + ' + parseFloat(num2) + ' = ' + (parseFloat(num1) + parseFloat(num2)) + ')', 'error');
+                return;
+            }
+
+            const data = {
+                number1: parseFloat(num1),
+                number2: parseFloat(num2),
+                answer: parseFloat(answer),
+                timestamp: new Date().toLocaleString('zh-TW')
+            };
+
+            loadingDiv.style.display = 'block';
+            form.querySelector('.btn-save').disabled = true;
+
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                loadingDiv.style.display = 'none';
+                form.querySelector('.btn-save').disabled = false;
+
+                showMessage('✅ 成功：資料已儲存到試算表', 'success');
+                form.reset();
+
+            } catch (error) {
+                console.error('錯誤:', error);
+                loadingDiv.style.display = 'none';
+                form.querySelector('.btn-save').disabled = false;
+                showMessage('❌ 錯誤：無法連接到伺服器', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
