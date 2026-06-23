@@ -1,8 +1,8 @@
 // Google App Script - Code.gs
 // 將此代碼複製到 Google Apps Script 編輯器
 
-const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID_HERE';
-const SHEET_NAME = '計算資料';
+const SPREADSHEET_ID = '1F9CBu3nAwUfjlbm0TtOrkGYzQwSrnrn0rqRhTIn-GSU';
+const SHEET_NAME = '工作表1';
 
 /**
  * 接收前端 POST 請求
